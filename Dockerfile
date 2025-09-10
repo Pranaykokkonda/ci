@@ -1,18 +1,20 @@
-# Dockerfile
-# Use a minimal base image for faster builds and smaller image size
-FROM python:3.9-alpine
+# Use a lightweight base image
+FROM python:3.9-slim-buster
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the application code into the container
-COPY app.py .
+# Copy only the requirements file first to leverage Docker cache
+COPY requirements.txt .
 
-# Install any necessary dependencies (Flask in this case)
-RUN pip install Flask
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port the application listens on
-EXPOSE 80
+# Copy the rest of the application code
+COPY . .
 
-# Define the command to run the application
+# Expose the port the app runs on
+EXPOSE 5000
+
+# Command to run the application
 CMD ["python", "app.py"]
